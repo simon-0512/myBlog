@@ -1,0 +1,277 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply font-sans bg-oatmeal text-charcoal antialiased;
+  }
+}
+
+@layer components {
+  /* Drop Cap */
+  .drop-cap::first-letter {
+    @apply float-left font-serif text-5xl leading-[0.8] pr-2 pt-1 text-terracotta font-semibold;
+  }
+
+  /* Tech Tag */
+  .tech-tag {
+    @apply font-mono text-[0.65rem] px-[10px] py-[3px] bg-ink/10 border border-ink/10 rounded text-ink;
+  }
+
+  /* Photo Tag - Camera Info */
+  .photo-tag {
+    @apply inline-flex items-center gap-1 font-mono text-[0.6rem] px-2 py-[2px] bg-white/90 backdrop-blur-sm rounded text-charcoal;
+  }
+
+  .photo-tags {
+    @apply absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/60 to-transparent flex flex-wrap gap-1.5 opacity-0 transition-opacity duration-300;
+  }
+
+  .photo-item:hover .photo-tags {
+    @apply opacity-100;
+  }
+
+  /* Hover Lift */
+  .hover-lift {
+    @apply transition-transform duration-300;
+  }
+
+  .hover-lift:hover {
+    @apply -translate-y-0.5;
+  }
+
+  /* Separator */
+  .separator {
+    @apply border-b border-ink/10;
+  }
+
+  /* Timeline Line */
+  .timeline-line {
+    @apply absolute left-0 top-0 bottom-0 w-0.5 bg-gradient-to-b from-terracotta to-terracotta/10;
+  }
+
+  /* Quote decoration */
+  .quote-mark {
+    @apply font-serif text-[8rem] leading-none text-terracotta/10 absolute -top-8 -left-4;
+  }
+
+  /* Section Number Accent */
+  .section-num {
+    @apply font-serif text-3xl font-semibold bg-gradient-to-r from-terracotta to-sage bg-clip-text text-transparent;
+  }
+
+  /* Colorful dots */
+  .dot-accent {
+    @apply inline-flex gap-0.5;
+  }
+
+  .dot-accent span {
+    @apply w-1.5 h-1.5 rounded-full;
+  }
+
+  .dot-accent span:nth-child(1) { @apply bg-terracotta; }
+  .dot-accent span:nth-child(2) { @apply bg-sage; }
+  .dot-accent span:nth-child(3) { @apply bg-ink; }
+
+  /* Highlight text */
+  .highlight {
+    @apply bg-gradient-to-b from-transparent to-sage/30;
+  }
+
+  /* Scroll Reveal */
+  .reveal {
+    @apply opacity-0 translate-y-6 transition-all duration-700 ease-out;
+  }
+
+  .reveal.visible {
+    @apply opacity-100 translate-y-0;
+  }
+
+  /* Nav Link */
+  .nav-link {
+    @apply relative transition-colors duration-300 hover:text-charcoal;
+  }
+
+  .nav-link::after {
+    content: '';
+    @apply absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-terracotta to-sage transition-all duration-300;
+  }
+
+  .nav-link:hover::after {
+    @apply w-full;
+  }
+
+  /* Mobile Nav Item */
+  .mobile-nav-item {
+    @apply flex flex-col items-center gap-0.5 text-charcoal/50 transition-opacity duration-200;
+  }
+
+  .mobile-nav-item.active {
+    @apply opacity-100 text-terracotta;
+  }
+
+  .mobile-nav-item svg {
+    @apply w-5 h-5;
+  }
+
+  .mobile-nav-item span {
+    @apply text-[0.6rem] font-mono;
+  }
+
+  /* Masthead Animation */
+  @keyframes mastheadReveal {
+    from {
+      opacity: 0;
+      transform: translateY(-30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .masthead-name {
+    animation: mastheadReveal 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  /* Banner Shapes Animation */
+  @keyframes float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(5deg); }
+  }
+
+  @keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .shape {
+    @apply absolute rounded-full opacity-60;
+  }
+
+  .shape-1 {
+    @apply w-[300px] h-[300px] top-[10%] right-[15%];
+    background: linear-gradient(135deg, rgba(122, 139, 111, 0.3), transparent);
+    animation: float 8s ease-in-out infinite;
+  }
+
+  .shape-2 {
+    @apply w-[200px] h-[200px] bottom-[20%] left-[10%];
+    background: linear-gradient(135deg, rgba(184, 92, 75, 0.25), transparent);
+    animation: float 10s ease-in-out infinite reverse;
+  }
+
+  .shape-3 {
+    @apply w-[150px] h-[150px] top-[40%] left-[30%];
+    background: linear-gradient(135deg, rgba(45, 74, 62, 0.2), transparent);
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .shape-4 {
+    @apply w-[100px] h-[100px] top-[25%] left-[50%] border-2 border-terracotta/20 bg-transparent rounded-none;
+    animation: rotate 20s linear infinite;
+  }
+
+  /* Banner Section */
+  .banner-section {
+    @apply relative min-h-screen overflow-hidden;
+  }
+
+  .banner-bg {
+    @apply absolute inset-0 opacity-15;
+    background:
+      radial-gradient(ellipse at 20% 30%, rgba(122, 139, 111, 0.4) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 70%, rgba(184, 92, 75, 0.3) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, rgba(45, 74, 62, 0.2) 0%, transparent 70%);
+  }
+
+  /* Syntax Highlighting - Custom Theme */
+  .hljs {
+    @apply block overflow-x-auto bg-charcoal text-oatmeal p-4 rounded-lg font-mono text-sm;
+  }
+
+  .hljs-keyword,
+  .hljs-selector-tag,
+  .hljs-built_in,
+  .hljs-name,
+  .hljs-tag {
+    @apply text-terracotta;
+  }
+
+  .hljs-string,
+  .hljs-title,
+  .hljs-section,
+  .hljs-attribute,
+  .hljs-literal,
+  .hljs-template-tag,
+  .hljs-template-variable,
+  .hljs-type,
+  .hljs-addition {
+    @apply text-sage;
+  }
+
+  .hljs-deletion,
+  .hljs-selector-attr,
+  .hljs-selector-pseudo,
+  .hljs-meta {
+    @apply text-rust;
+  }
+
+  .hljs-comment,
+  .hljs-quote {
+    @apply text-charcoal/40 italic;
+  }
+
+  .hljs-number,
+  .hljs-regexp,
+  .hljs-selector-id,
+  .hljs-variable,
+  .hljs-template-variable,
+  .hljs-link {
+    @apply text-[#e5c07b];
+  }
+
+  .hljs-function {
+    @apply text-ink;
+  }
+
+  .hljs-params {
+    @apply text-oatmeal/80;
+  }
+
+  .hljs-symbol,
+  .hljs-bullet,
+  .hljs-subst,
+  .hljs-selector-class,
+  .hljs-emphasis {
+    @apply text-rust;
+  }
+
+  .hljs-class .hljs-title,
+  .hljs-title.class_ {
+    @apply text-terracotta;
+  }
+
+  .hljs-attr {
+    @apply text-[#e06c75];
+  }
+
+  /* Prose code blocks */
+  .prose pre {
+    @apply bg-charcoal text-oatmeal p-4 rounded-lg overflow-x-auto;
+  }
+
+  .prose code {
+    @apply font-mono text-sm;
+  }
+
+  .prose code::before,
+  .prose code::after {
+    content: none;
+  }
+}

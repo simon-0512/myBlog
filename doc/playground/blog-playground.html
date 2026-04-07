@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simon · 拾时造物</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            oatmeal: '#F5F4EF',
+            cream: '#FAF8F5',
+            charcoal: '#2C2C2C',
+            ink: '#1A3A3A',       // 深墨绿
+            terracotta: '#B85C4B', // 低饱和赤陶红
+            sage: '#7A8B6F',      // 鼠尾草绿
+            rust: '#C17B5F',       // 铁锈红
+            forest: '#2D4A3E',     // 森林绿
+          },
+          fontFamily: {
+            serif: ['Noto Serif SC', 'Georgia', 'serif'],
+            sans: ['Inter', 'Helvetica Neue', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    * {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #F5F4EF;
+      color: #2C2C2C;
+    }
+
+    /* Drop Cap */
+    .drop-cap::first-letter {
+      float: left;
+      font-family: 'Noto Serif SC', serif;
+      font-size: 5rem;
+      line-height: 0.8;
+      padding-right: 0.5rem;
+      padding-top: 0.25rem;
+      color: #B85C4B;
+      font-weight: 600;
+    }
+
+    /* Banner with Illustration Background */
+    .banner-section {
+      position: relative;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    .banner-bg {
+      position: absolute;
+      inset: 0;
+      opacity: 0.15;
+      background:
+        radial-gradient(ellipse at 20% 30%, rgba(122, 139, 111, 0.4) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 70%, rgba(184, 92, 75, 0.3) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 50%, rgba(45, 74, 62, 0.2) 0%, transparent 70%);
+    }
+
+    /* Abstract geometric shapes - inspired by editorial illustrations */
+    .banner-shapes {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+
+    .shape {
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0.6;
+    }
+
+    .shape-1 {
+      width: 300px;
+      height: 300px;
+      top: 10%;
+      right: 15%;
+      background: linear-gradient(135deg, rgba(122, 139, 111, 0.3), transparent);
+      animation: float 8s ease-in-out infinite;
+    }
+
+    .shape-2 {
+      width: 200px;
+      height: 200px;
+      bottom: 20%;
+      left: 10%;
+      background: linear-gradient(135deg, rgba(184, 92, 75, 0.25), transparent);
+      animation: float 10s ease-in-out infinite reverse;
+    }
+
+    .shape-3 {
+      width: 150px;
+      height: 150px;
+      top: 40%;
+      left: 30%;
+      background: linear-gradient(135deg, rgba(45, 74, 62, 0.2), transparent);
+      animation: float 6s ease-in-out infinite;
+    }
+
+    .shape-4 {
+      width: 100px;
+      height: 100px;
+      top: 25%;
+      left: 50%;
+      border: 2px solid rgba(184, 92, 75, 0.2);
+      background: transparent;
+      border-radius: 0;
+      animation: rotate 20s linear infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-20px) rotate(5deg); }
+    }
+
+    @keyframes rotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    /* Masthead Animation */
+    @keyframes mastheadReveal {
+      from {
+        opacity: 0;
+        transform: translateY(-30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .masthead-name {
+      animation: mastheadReveal 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    /* Subtle Hover Effects */
+    .hover-lift {
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+
+    .hover-lift:hover {
+      transform: translateY(-2px);
+    }
+
+    /* Tech Tag */
+    .tech-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
+      padding: 3px 10px;
+      background: rgba(26, 58, 58, 0.08);
+      border: 1px solid rgba(26, 58, 58, 0.1);
+      border-radius: 4px;
+      color: #1A3A3A;
+    }
+
+    /* Photo Tag - Camera Info */
+    .photo-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.6rem;
+      padding: 2px 8px;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(4px);
+      border-radius: 2px;
+      color: #2C2C2C;
+    }
+
+    .photo-tags {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 12px;
+      background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 100%);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .photo-item:hover .photo-tags {
+      opacity: 1;
+    }
+
+    /* Separator */
+    .separator {
+      border-bottom: 1px solid rgba(45, 74, 62, 0.1);
+    }
+
+    /* Photo Grid */
+    .photo-item {
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .photo-item img {
+      transition: transform 0.5s ease;
+    }
+
+    .photo-item:hover img {
+      transform: scale(1.02);
+    }
+
+    /* Resume Timeline */
+    .timeline-line {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: linear-gradient(180deg, #B85C4B 0%, rgba(184, 92, 75, 0.1) 100%);
+    }
+
+    /* Scroll Reveal */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Nav Link Hover */
+    .nav-link {
+      position: relative;
+      transition: color 0.3s ease;
+    }
+
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: linear-gradient(90deg, #B85C4B, #7A8B6F);
+      transition: width 0.3s ease;
+    }
+
+    .nav-link:hover::after {
+      width: 100%;
+    }
+
+    /* Quote decoration */
+    .quote-mark {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 8rem;
+      line-height: 1;
+      color: rgba(184, 92, 75, 0.12);
+      position: absolute;
+      top: -2rem;
+      left: -1rem;
+    }
+
+    /* Section Number Accent */
+    .section-num {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 3.5rem;
+      font-weight: 600;
+      background: linear-gradient(135deg, #B85C4B 0%, #7A8B6F 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Colorful dots decoration */
+    .dot-accent {
+      display: inline-flex;
+      gap: 3px;
+    }
+
+    .dot-accent span {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+    }
+
+    .dot-accent span:nth-child(1) { background: #B85C4B; }
+    .dot-accent span:nth-child(2) { background: #7A8B6F; }
+    .dot-accent span:nth-child(3) { background: #1A3A3A; }
+
+    /* Highlight text */
+    .highlight {
+      background: linear-gradient(180deg, transparent 60%, rgba(122, 139, 111, 0.3) 60%);
+    }
+  </style>
+</head>
+<body class="antialiased">
+
+  <!-- Fixed Navigation -->
+  <nav class="fixed top-0 left-0 right-0 z-50 bg-oatmeal/95 backdrop-blur-md border-b border-ink/5">
+    <div class="max-w-7xl mx-auto px-8 py-4 flex justify-between items-center">
+      <div class="flex items-center gap-3">
+        <div class="dot-accent">
+          <span></span><span></span><span></span>
+        </div>
+        <span class="font-mono text-xs text-charcoal/60 tracking-widest">SIMON.WANG</span>
+      </div>
+      <div class="flex gap-10">
+        <a href="#thoughts" class="nav-link text-sm text-charcoal/70 hover:text-charcoal">思考</a>
+        <a href="#tech" class="nav-link text-sm text-charcoal/70 hover:text-charcoal">技术</a>
+        <a href="#photo" class="nav-link text-sm text-charcoal/70 hover:text-charcoal">摄影</a>
+        <a href="#resume" class="nav-link text-sm text-charcoal/70 hover:text-charcoal">关于</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Banner / Masthead -->
+  <header class="banner-section flex flex-col justify-center px-8 pt-24 pb-16">
+    <!-- Illustration Background -->
+    <div class="banner-bg"></div>
+    <div class="banner-shapes">
+      <div class="shape shape-1"></div>
+      <div class="shape shape-2"></div>
+      <div class="shape shape-3"></div>
+      <div class="shape shape-4"></div>
+    </div>
+
+    <!-- Decorative lines -->
+    <div class="absolute top-32 left-8 w-px h-32 bg-gradient-to-b from-transparent via-ink/20 to-transparent"></div>
+    <div class="absolute bottom-32 right-12 w-24 h-px bg-gradient-to-r from-transparent via-terracotta/30 to-transparent"></div>
+
+    <div class="max-w-7xl mx-auto w-full relative z-10">
+      <!-- Pre-title -->
+      <p class="flex items-center gap-3 font-mono text-xs tracking-[0.3em] text-charcoal/40 mb-6 reveal" style="animation-delay: 0.1s">
+        <span class="inline-block w-8 h-px bg-terracotta"></span>
+        投资 / 技术 / 摄影 / 生活
+      </p>
+
+      <!-- Main Masthead -->
+      <h1 class="masthead-name font-serif text-[14vw] lg:text-[11vw] xl:text-[9vw] leading-[0.88] tracking-tight text-charcoal mb-8">
+        Simon<br/>
+        <span class="text-ink">Wang</span>
+      </h1>
+
+      <!-- Subtitle / Philosophy -->
+      <div class="max-w-xl ml-1 reveal" style="animation-delay: 0.3s">
+        <p class="text-lg font-sans text-charcoal/60 leading-relaxed mb-6">
+          用时间构建投资哲学。<br/>
+          在数据与代码之间，寻找<span class="highlight">秩序的美</span>。
+        </p>
+        <div class="flex items-center gap-4">
+          <span class="font-mono text-xs text-sage tracking-wider">SHANGHAI</span>
+          <span class="w-1 h-1 rounded-full bg-terracotta"></span>
+          <span class="font-mono text-xs text-charcoal/40">EST. 2011</span>
+        </div>
+      </div>
+
+      <!-- Scroll indicator -->
+      <div class="mt-20 flex items-center gap-4 reveal" style="animation-delay: 0.5s">
+        <div class="w-16 h-px bg-gradient-to-r from-charcoal/30 to-transparent"></div>
+        <span class="font-mono text-xs text-charcoal/40 tracking-widest">SCROLL</span>
+        <svg class="w-4 h-4 text-charcoal/30 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
+        </svg>
+      </div>
+    </div>
+  </header>
+
+  <!-- Thoughts Section -->
+  <section id="thoughts" class="py-32 px-8 bg-cream/50">
+    <div class="max-w-3xl mx-auto">
+      <!-- Section Label -->
+      <div class="flex items-center gap-6 mb-16 reveal">
+        <span class="section-num">01</span>
+        <div>
+          <h2 class="font-serif text-2xl text-charcoal">思考</h2>
+          <p class="font-mono text-xs text-charcoal/40 mt-1 tracking-wider">THOUGHTS & ESSAYS</p>
+        </div>
+      </div>
+
+      <!-- Editor's Note Style -->
+      <article class="relative pl-10 border-l-2 border-ink/10">
+        <div class="quote-mark">"</div>
+
+        <div class="relative">
+          <p class="drop-cap text-lg font-sans leading-[2] text-charcoal/85 mb-10 reveal">
+            上周和市场上一个老投资者喝茶，他问我："你每天看那么多研报，真正记住的有几篇？"我愣了一下，确实，大多数信息都是过眼云烟。但这恰恰是投资的反直觉之处——与其追逐每一个热点，不如找到几个真正理解的企业，然后耐心等待。
+          </p>
+
+          <p class="text-lg font-sans leading-[2] text-charcoal/85 mb-10 reveal">
+            这个博客就是想记录这些"看似无用"的想法。没有精准的买点提示，没有华丽的收益截图。只是一些关于商业本质的思考，关于人性的观察，关于<span class="text-terracotta font-medium">时间的价值</span>。
+          </p>
+
+          <blockquote class="relative pl-8 py-6 my-14 bg-ink/5 rounded-r-lg reveal">
+            <div class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-terracotta to-sage rounded-full"></div>
+            <p class="font-serif text-xl text-charcoal/80 leading-relaxed">
+              "时间是投资者最好的朋友，也是普通人最大的杠杆。"
+            </p>
+          </blockquote>
+
+          <p class="text-lg font-sans leading-[2] text-charcoal/85 reveal">
+            投资这件事，最终比拼的是谁更能"看见"未来。而"看见"的能力，需要不断训练。所以，写下来；所以，<span class="highlight">思考下去</span>。
+          </p>
+        </div>
+
+        <!-- Meta -->
+        <div class="mt-12 flex items-center gap-4 text-charcoal/40 font-mono text-xs reveal">
+          <span class="px-2 py-1 bg-terracotta/10 text-terracotta rounded">投资随笔</span>
+          <span>2024.03.15</span>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- Divider -->
+  <div class="max-w-7xl mx-auto px-8">
+    <div class="separator"></div>
+  </div>
+
+  <!-- Tech Section -->
+  <section id="tech" class="py-32 px-8">
+    <div class="max-w-5xl mx-auto">
+      <!-- Section Label -->
+      <div class="flex items-center gap-6 mb-16 reveal">
+        <span class="section-num">02</span>
+        <div>
+          <h2 class="font-serif text-2xl text-charcoal">技术</h2>
+          <p class="font-mono text-xs text-charcoal/40 mt-1 tracking-wider">TECHNICAL NOTES</p>
+        </div>
+      </div>
+
+      <!-- Tech Index -->
+      <div class="space-y-0">
+        <!-- Item 1 -->
+        <a href="#" class="block py-7 border-b border-charcoal/5 hover-lift group reveal">
+          <div class="flex justify-between items-start gap-8">
+            <div class="flex-1">
+              <h3 class="font-serif text-xl text-charcoal group-hover:text-terracotta transition-colors">
+                基于 AkShare 的基金反推算法实现
+              </h3>
+              <p class="font-sans text-sm text-charcoal/50 mt-2">
+                如何通过持仓股票反推持有该股票的主动基金
+              </p>
+            </div>
+            <div class="flex items-center gap-4 shrink-0">
+              <span class="tech-tag">Python</span>
+              <span class="font-mono text-xs text-charcoal/30">2024.03.10</span>
+            </div>
+          </div>
+        </a>
+
+        <!-- Item 2 -->
+        <a href="#" class="block py-7 border-b border-charcoal/5 hover-lift group reveal">
+          <div class="flex justify-between items-start gap-8">
+            <div class="flex-1">
+              <h3 class="font-serif text-xl text-charcoal group-hover:text-terracotta transition-colors">
+                贪心算法在基金组合优化中的应用
+              </h3>
+              <p class="font-sans text-sm text-charcoal/50 mt-2">
+                从热点股票出发，构建目标行业权重的基金组合
+              </p>
+            </div>
+            <div class="flex items-center gap-4 shrink-0">
+              <span class="tech-tag">Algorithm</span>
+              <span class="font-mono text-xs text-charcoal/30">2024.02.28</span>
+            </div>
+          </div>
+        </a>
+
+        <!-- Item 3 -->
+        <a href="#" class="block py-7 border-b border-charcoal/5 hover-lift group reveal">
+          <div class="flex justify-between items-start gap-8">
+            <div class="flex-1">
+              <h3 class="font-serif text-xl text-charcoal group-hover:text-terracotta transition-colors">
+                React 性能优化：避免不必要的重渲染
+              </h3>
+              <p class="font-sans text-sm text-charcoal/50 mt-2">
+                useMemo、useCallback 与 React.memo 的正确使用姿势
+              </p>
+            </div>
+            <div class="flex items-center gap-4 shrink-0">
+              <span class="tech-tag">React</span>
+              <span class="font-mono text-xs text-charcoal/30">2024.02.15</span>
+            </div>
+          </div>
+        </a>
+
+        <!-- Item 4 -->
+        <a href="#" class="block py-7 border-b border-charcoal/5 hover-lift group reveal">
+          <div class="flex justify-between items-start gap-8">
+            <div class="flex-1">
+              <h3 class="font-serif text-xl text-charcoal group-hover:text-terracotta transition-colors">
+                FastAPI 缓存策略设计与实现
+              </h3>
+              <p class="font-sans text-sm text-charcoal/50 mt-2">
+                文件缓存 + Redis 混合方案的最佳实践
+              </p>
+            </div>
+            <div class="flex items-center gap-4 shrink-0">
+              <span class="tech-tag">Backend</span>
+              <span class="font-mono text-xs text-charcoal/30">2024.01.20</span>
+            </div>
+          </div>
+        </a>
+      </div>
+
+      <!-- More Link -->
+      <div class="mt-12 text-center reveal">
+        <a href="#" class="inline-flex items-center gap-2 font-mono text-sm text-charcoal/50 hover:text-terracotta transition-colors group">
+          查看全部技术笔记
+          <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Divider -->
+  <div class="max-w-7xl mx-auto px-8">
+    <div class="separator"></div>
+  </div>
+
+  <!-- Photo Section -->
+  <section id="photo" class="py-32 px-8 bg-cream/50">
+    <div class="max-w-7xl mx-auto">
+      <!-- Section Label -->
+      <div class="flex items-center gap-6 mb-16 reveal">
+        <span class="section-num">03</span>
+        <div>
+          <h2 class="font-serif text-2xl text-charcoal">摄影</h2>
+          <p class="font-mono text-xs text-charcoal/40 mt-1 tracking-wider">PHOTO ESSAYS</p>
+        </div>
+      </div>
+
+      <!-- Masonry Grid -->
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 lg:gap-7">
+        <!-- Photo 1 - Large -->
+        <div class="photo-item col-span-2 row-span-2 rounded-lg overflow-hidden reveal">
+          <div class="relative h-full min-h-[420px]">
+            <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80"
+                 alt="Mountain landscape"
+                 class="w-full h-full object-cover"/>
+            <!-- Camera Tags -->
+            <div class="photo-tags">
+              <span class="photo-tag">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/></svg>
+                f/8
+              </span>
+              <span class="photo-tag">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-width="2" d="M12 8v4l3 3"/></svg>
+                1/250s
+              </span>
+              <span class="photo-tag">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                ISO 100
+              </span>
+              <span class="photo-tag bg-charcoal/80 text-white">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                川西高原
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Photo 2 -->
+        <div class="photo-item rounded-lg overflow-hidden reveal" style="animation-delay: 0.1s">
+          <div class="relative h-52">
+            <img src="https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=400&q=80"
+                 alt="Japanese temple"
+                 class="w-full h-full object-cover"/>
+            <div class="photo-tags">
+              <span class="photo-tag">f/2.8</span>
+              <span class="photo-tag">1/500s</span>
+              <span class="photo-tag bg-terracotta/90 text-white">京都</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Photo 3 -->
+        <div class="photo-item rounded-lg overflow-hidden reveal" style="animation-delay: 0.2s">
+          <div class="relative h-52">
+            <img src="https://images.unsplash.com/photo-1519681393784-d120267933ba?w=400&q=80"
+                 alt="Night mountain"
+                 class="w-full h-full object-cover"/>
+            <div class="photo-tags">
+              <span class="photo-tag">f/1.4</span>
+              <span class="photo-tag">25s</span>
+              <span class="photo-tag bg-ink/80 text-white">银河</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Photo 4 -->
+        <div class="photo-item col-span-2 rounded-lg overflow-hidden reveal" style="animation-delay: 0.3s">
+          <div class="relative h-64">
+            <img src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800&q=80"
+                 alt="Foggy forest"
+                 class="w-full h-full object-cover"/>
+            <div class="photo-tags">
+              <span class="photo-tag">f/11</span>
+              <span class="photo-tag">1/60s</span>
+              <span class="photo-tag">ISO 400</span>
+              <span class="photo-tag bg-sage/90 text-white">神农架</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Photo 5 -->
+        <div class="photo-item rounded-lg overflow-hidden reveal" style="animation-delay: 0.4s">
+          <div class="relative h-48">
+            <img src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=400&q=80"
+                 alt="Lake view"
+                 class="w-full h-full object-cover"/>
+            <div class="photo-tags">
+              <span class="photo-tag">f/8</span>
+              <span class="photo-tag">1/125s</span>
+              <span class="photo-tag bg-charcoal/80 text-white">新西兰</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Photo 6 -->
+        <div class="photo-item rounded-lg overflow-hidden reveal" style="animation-delay: 0.5s">
+          <div class="relative h-48">
+            <img src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&q=80"
+                 alt="Sunrise"
+                 class="w-full h-full object-cover"/>
+            <div class="photo-tags">
+              <span class="photo-tag">f/16</span>
+              <span class="photo-tag">1/30s</span>
+              <span class="photo-tag bg-rust/90 text-white">黄山</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Instagram Link -->
+      <div class="mt-12 text-center reveal">
+        <a href="#" class="inline-flex items-center gap-3 font-mono text-sm text-charcoal/50 hover:text-terracotta transition-colors">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+          </svg>
+          @simonwang_photo
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Divider -->
+  <div class="max-w-7xl mx-auto px-8">
+    <div class="separator"></div>
+  </div>
+
+  <!-- Resume / About Section -->
+  <section id="resume" class="py-32 px-8">
+    <div class="max-w-5xl mx-auto">
+      <!-- Section Label -->
+      <div class="flex items-center gap-6 mb-16 reveal">
+        <span class="section-num">04</span>
+        <div>
+          <h2 class="font-serif text-2xl text-charcoal">关于</h2>
+          <p class="font-mono text-xs text-charcoal/40 mt-1 tracking-wider">ABOUT & RESUME</p>
+        </div>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-16">
+        <!-- Bio -->
+        <div class="reveal">
+          <div class="relative pl-10">
+            <div class="timeline-line"></div>
+
+            <h3 class="font-serif text-xl text-charcoal mb-5">我是谁</h3>
+            <div class="space-y-4 text-charcoal/70 font-sans text-sm leading-relaxed">
+              <p>
+                前互联网后端开发，现全职投资者。关注A股、港股市场，擅长从热点板块反向挖掘潜力基金。
+              </p>
+              <p>
+                相信<span class="text-ink font-medium">时间是最好的杠杆</span>——无论是投资还是个人成长。这个博客记录我的思考碎片、技术笔记和生活点滴。
+              </p>
+            </div>
+
+            <!-- Tags -->
+            <div class="mt-6 flex flex-wrap gap-2">
+              <span class="px-3 py-1 bg-ink/5 text-ink text-xs rounded-full font-mono">📍 上海</span>
+              <span class="px-3 py-1 bg-terracotta/5 text-terracotta text-xs rounded-full font-mono">🎯 长期主义</span>
+              <span class="px-3 py-1 bg-sage/10 text-sage text-xs rounded-full font-mono">☕ 咖啡</span>
+            </div>
+
+            <!-- Social Links -->
+            <div class="mt-8 flex gap-6">
+              <a href="#" class="font-mono text-xs text-charcoal/40 hover:text-terracotta transition-colors">GitHub</a>
+              <a href="#" class="font-mono text-xs text-charcoal/40 hover:text-terracotta transition-colors">Twitter</a>
+              <a href="#" class="font-mono text-xs text-charcoal/40 hover:text-terracotta transition-colors">Email</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Timeline -->
+        <div class="reveal" style="animation-delay: 0.1s">
+          <div class="relative pl-10">
+            <div class="timeline-line"></div>
+
+            <h3 class="font-serif text-xl text-charcoal mb-6">经历</h3>
+
+            <div class="space-y-8">
+              <!-- Timeline Item 1 -->
+              <div class="relative">
+                <div class="absolute -left-10 top-1 w-3 h-3 rounded-full bg-terracotta border-2 border-oatmeal"></div>
+                <span class="font-mono text-xs text-terracotta">2022 - 现在</span>
+                <h4 class="font-sans font-medium text-charcoal mt-1">全职投资者</h4>
+                <p class="font-sans text-sm text-charcoal/50 mt-1">
+                  专注A股、港股二级市场研究
+                </p>
+              </div>
+
+              <!-- Timeline Item 2 -->
+              <div class="relative">
+                <div class="absolute -left-10 top-1 w-3 h-3 rounded-full bg-sage border-2 border-oatmeal"></div>
+                <span class="font-mono text-xs text-charcoal/40">2019 - 2022</span>
+                <h4 class="font-sans font-medium text-charcoal mt-1">高级后端工程师</h4>
+                <p class="font-sans text-sm text-charcoal/50 mt-1">
+                  某中型互联网公司技术负责人
+                </p>
+              </div>
+
+              <!-- Timeline Item 3 -->
+              <div class="relative">
+                <div class="absolute -left-10 top-1 w-3 h-3 rounded-full bg-ink/50 border-2 border-oatmeal"></div>
+                <span class="font-mono text-xs text-charcoal/40">2015 - 2019</span>
+                <h4 class="font-sans font-medium text-charcoal mt-1">后端开发工程师</h4>
+                <p class="font-sans text-sm text-charcoal/50 mt-1">
+                  某电商平台核心服务开发
+                </p>
+              </div>
+
+              <!-- Timeline Item 4 -->
+              <div class="relative">
+                <div class="absolute -left-10 top-1 w-3 h-3 rounded-full bg-charcoal/30 border-2 border-oatmeal"></div>
+                <span class="font-mono text-xs text-charcoal/40">2011 - 2015</span>
+                <h4 class="font-sans font-medium text-charcoal mt-1">计算机科学与技术</h4>
+                <p class="font-sans text-sm text-charcoal/50 mt-1">
+                  上海交通大学 本科
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="py-16 px-8 border-t border-charcoal/5">
+    <div class="max-w-7xl mx-auto flex justify-between items-center">
+      <p class="font-serif text-charcoal/30 text-sm">
+        © 2024 Simon Wang
+      </p>
+      <div class="flex items-center gap-3">
+        <div class="dot-accent">
+          <span></span><span></span><span></span>
+        </div>
+        <p class="font-mono text-xs text-charcoal/30">
+          用时间构建投资哲学
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Humor Note (Claude Style!) -->
+  <div class="fixed bottom-6 right-6 bg-charcoal text-oatmeal px-4 py-2.5 rounded-full shadow-lg font-mono text-xs opacity-90 hover:opacity-100 transition-all hover:shadow-xl hover:-translate-y-0.5 cursor-default">
+    💡 投资有风险，博客不构成投资建议
+  </div>
+
+  <script>
+    // Scroll Reveal Animation
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -80px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, observerOptions);
+
+    document.querySelectorAll('.reveal').forEach(el => {
+      observer.observe(el);
+    });
+
+    // Smooth scroll for nav links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+  </script>
+</body>
+</html>
