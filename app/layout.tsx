@@ -5,6 +5,9 @@ import MobileNav from '@/components/MobileNav'
 export const metadata: Metadata = {
   title: 'Simon · 拾时造物',
   description: '用时间构建投资哲学。在数据与代码之间，寻找秩序的美。',
+  icons: {
+    icon: '/favicon.svg',
+  },
 }
 
 export default function RootLayout({
@@ -27,15 +30,14 @@ export default function RootLayout({
         <nav className="fixed top-0 left-0 right-0 z-50 bg-oatmeal/95 backdrop-blur-md border-b border-ink/5 hidden md:block">
           <div className="max-w-7xl mx-auto px-8 py-4 flex justify-between items-center">
             <a href="/" className="flex items-center gap-3 hover:opacity-70 transition-opacity">
-              <div className="dot-accent">
-                <span></span><span></span><span></span>
-              </div>
+              <img src="/logo.svg" alt="拾时造物" className="w-8 h-8" />
             </a>
             <div className="flex gap-10">
               <a href="#thoughts" className="nav-link text-sm text-charcoal/70 hover:text-charcoal">思考</a>
               <a href="#tech" className="nav-link text-sm text-charcoal/70 hover:text-charcoal">技术</a>
               <a href="#photo" className="nav-link text-sm text-charcoal/70 hover:text-charcoal">摄影</a>
               <a href="#resume" className="nav-link text-sm text-charcoal/70 hover:text-charcoal">关于</a>
+              <a href="http://120.53.94.131:5173/" target="_blank" rel="noopener noreferrer" className="nav-link text-sm text-charcoal/70 hover:text-charcoal">PixelBrick</a>
             </div>
           </div>
         </nav>
@@ -49,9 +51,7 @@ export default function RootLayout({
               © 2026 CUI WEIJIAN
             </p>
             <div className="flex items-center gap-4">
-              <div className="dot-accent">
-                <span></span><span></span><span></span>
-              </div>
+              <img src="/logo.svg" alt="拾时造物" className="w-6 h-6 opacity-60" />
               <a
                 href="https://claude.ai"
                 target="_blank"

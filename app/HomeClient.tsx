@@ -40,6 +40,8 @@ interface Post {
   tags: string[]
   excerpt: string
   featured?: boolean
+  quote?: string
+  closingText?: string
 }
 
 interface Photo {
@@ -421,7 +423,7 @@ export default function HomeClient() {
                 <div className="mt-8 flex gap-6">
                   <a href={`https://github.com/${about.github}`} target="_blank" rel="noopener noreferrer" className="font-mono text-xs text-charcoal/40 hover:text-terracotta transition-colors">GitHub</a>
                   <a href={`https://twitter.com/${about.twitter}`} target="_blank" rel="noopener noreferrer" className="font-mono text-xs text-charcoal/40 hover:text-terracotta transition-colors">Twitter</a>
-                  <a href={`mailto:${about.email}`} className="font-mono text-xs text-charcoal/40 hover:text-terracotta transition-colors">Email</a>
+                  <a href={`mailto:${about.email}`} className="font-mono text-xs text-charcoal/40 hover:text-terracotta transition-colors">{about.email}</a>
                 </div>
               </div>
             </div>

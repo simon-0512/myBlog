@@ -20,7 +20,7 @@ tags:
   - 🎮 任天堂爱好者
   - 📹 器材党
   - 👶 宝爸
-  - 🦀 claude 信徒
+  - 🦀 claude 爱好者
 ---
 
 ## 关于我·ABOUT ME
